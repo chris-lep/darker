@@ -111,6 +111,12 @@ git push --follow-tags
 "Release vX.Y.Z" and creates the annotated tag `vX.Y.Z`. Tests check that `metadata.json`,
 `package.json` and the CHANGELOG agree.
 
+GitHub Releases are optional and created by hand **after** pushing. In the web UI, pick the
+already-pushed tag and paste the version's CHANGELOG section as the notes. Don't let GitHub
+create the tag: that makes a lightweight tag which clashes with the local annotated one.
+(`v0.1.0` is a GitHub-created lightweight tag for that reason; all later tags come from
+`npm version`.)
+
 ## Conventions
 
 - 4-space indent, single quotes, 100-column width (Prettier enforces this). Run `make check`.
