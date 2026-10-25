@@ -29,13 +29,16 @@ under Wayland.
 ## Installation
 
 ```sh
-git clone <this repo> darker
+git clone https://github.com/chris-lep/darker.git
 cd darker
 make install        # symlinks src/darker@chris-lep into ~/.local/share/cinnamon/applets/
 ```
 
 Then right-click the panel → **Applets**, select **Darker** and click **+**. You might need
 to restart Cinnamon first (`Ctrl+Alt+Esc`) before it appears in the list.
+
+The applet is symlinked, not copied, so keep the cloned folder. `git pull` followed by a
+Cinnamon restart updates it.
 
 To remove it, take it off the panel and run `make uninstall`.
 

@@ -5,6 +5,14 @@
     "description": "Cinnamon panel applet that darkens the screen with a software overlay",
     "license": "GPL-3.0-or-later",
     "author": "chris-lep",
+    "homepage": "https://github.com/chris-lep/darker#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/chris-lep/darker.git"
+    },
+    "bugs": {
+        "url": "https://github.com/chris-lep/darker/issues"
+    },
     "type": "commonjs",
     "engines": {
         "node": ">=20"
