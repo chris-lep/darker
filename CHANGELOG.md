@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-25
+
 ### Added
 
 - Scrolling over the panel icon changes the darkness in 5% steps (up = brighter, down = darker).
@@ -23,5 +25,6 @@ All notable changes to this project are documented here. The format follows
 - "Reset to 0%" menu item.
 - Fullscreen windows are darkened too (unredirect is disabled while active).
 
-[Unreleased]: https://github.com/chris-lep/darker/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/chris-lep/darker/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/chris-lep/darker/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/chris-lep/darker/releases/tag/v0.1.0
