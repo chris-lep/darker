@@ -90,3 +90,62 @@ describe('text helpers', () => {
         assert.equal(Darkness.tooltipText(0.4), 'Darker: 40%');
     });
 });
+
+describe('stepLevel', () => {
+    const percentAfter = (percent, steps) =>
+        Darkness.toPercent(Darkness.stepLevel(percent / 100, steps));
+
+    it('moves by SCROLL_STEP_PERCENT on the grid', () => {
+        assert.equal(Darkness.SCROLL_STEP_PERCENT, 5);
+        assert.equal(percentAfter(40, 1), 45);
+        assert.equal(percentAfter(40, -1), 35);
+        assert.equal(percentAfter(0, 1), 5);
+    });
+
+    it('snaps off-grid levels to the next grid point in the scroll direction', () => {
+        assert.equal(percentAfter(37, 1), 40);
+        assert.equal(percentAfter(37, -1), 35);
+        assert.equal(percentAfter(1, -1), 0);
+        assert.equal(percentAfter(89, 1), 90);
+    });
+
+    it('supports multiple steps at once', () => {
+        assert.equal(percentAfter(40, 3), 55);
+        assert.equal(percentAfter(40, -3), 25);
+    });
+
+    it('stays within 0..MAX_LEVEL', () => {
+        assert.equal(Darkness.stepLevel(0, -1), 0);
+        assert.equal(Darkness.stepLevel(Darkness.MAX_LEVEL, 1), Darkness.MAX_LEVEL);
+        assert.equal(Darkness.stepLevel(0.88, 5), Darkness.MAX_LEVEL);
+    });
+
+    it('returns exact grid values (no floating point drift)', () => {
+        let level = 0;
+        for (let i = 0; i < 18; i++) level = Darkness.stepLevel(level, 1);
+        assert.equal(level, Darkness.MAX_LEVEL);
+        for (let i = 0; i < 18; i++) level = Darkness.stepLevel(level, -1);
+        assert.equal(level, 0);
+    });
+
+    it('zero steps only clamps', () => {
+        assert.equal(Darkness.stepLevel(0.37, 0), 0.37);
+        assert.equal(Darkness.stepLevel(2, 0), Darkness.MAX_LEVEL);
+    });
+});
+
+describe('scrollSteps', () => {
+    // Same values as Cinnamon's Clutter.ScrollDirection.
+    const ScrollDirection = { UP: 0, DOWN: 1, LEFT: 2, RIGHT: 3, SMOOTH: 4 };
+
+    it('scroll up = brighter, scroll down = darker', () => {
+        assert.equal(Darkness.scrollSteps(ScrollDirection.UP, ScrollDirection), -1);
+        assert.equal(Darkness.scrollSteps(ScrollDirection.DOWN, ScrollDirection), 1);
+    });
+
+    it('ignores horizontal and smooth scrolling', () => {
+        for (const d of ['LEFT', 'RIGHT', 'SMOOTH']) {
+            assert.equal(Darkness.scrollSteps(ScrollDirection[d], ScrollDirection), 0, d);
+        }
+    });
+});

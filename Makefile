@@ -3,7 +3,7 @@ SRC_DIR     := $(CURDIR)/src/$(UUID)
 APPLETS_DIR := $(HOME)/.local/share/cinnamon/applets
 TARGET      := $(APPLETS_DIR)/$(UUID)
 
-.PHONY: help install uninstall reload test lint format check
+.PHONY: help install uninstall reload test lint format check release
 
 help:
 	@echo "make install    Symlink the applet into $(APPLETS_DIR)"
@@ -13,6 +13,7 @@ help:
 	@echo "make lint       Run ESLint"
 	@echo "make format     Format all files with Prettier"
 	@echo "make check      Lint + format check + tests"
+	@echo "make release BUMP=patch|minor|major  Bump version, update CHANGELOG, commit and tag"
 
 install:
 	@mkdir -p "$(APPLETS_DIR)"
@@ -42,3 +43,9 @@ format:
 
 check:
 	npm run check
+
+release:
+	@case "$(BUMP)" in patch|minor|major) ;; \
+		*) echo "Usage: make release BUMP=patch|minor|major" >&2; exit 1;; esac
+	npm version $(BUMP)
+	@echo "Release committed and tagged. Publish with: git push --follow-tags"

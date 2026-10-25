@@ -9,6 +9,7 @@ click-through black layer over everything on screen, inside Cinnamon's composito
 ## Features
 
 - Slider in the panel popup, from 0% to 90% darkness (capped so the screen can never go fully black)
+- Scroll over the panel icon to adjust in 5% steps
 - The panel shows just an icon while off, and the current percentage (e.g. `40%`) while active
 - Covers all monitors, panels, menus, and fullscreen video
 - Works together with **Night Light**
@@ -44,7 +45,8 @@ To remove it, take it off the panel and run `make uninstall`.
 
 ## Usage
 
-Click the panel icon and drag the slider. **Reset to 0%** turns darkening off.
+Click the panel icon and drag the slider, or scroll over the icon: up = brighter, down =
+darker, in 5% steps. **Reset to 0%** turns darkening off.
 
 If the screen ever gets too dark to see: restarting Cinnamon (`Ctrl+Alt+Esc`) or removing
 the applet always brings it back to normal.
@@ -66,6 +68,9 @@ make test        # unit tests only (node --test, no dependencies needed)
 make format      # auto-format
 make reload      # reload the running applet after editing
 ```
+
+Changes are listed in [CHANGELOG.md](CHANGELOG.md). Versions follow
+[Semantic Versioning](https://semver.org/), and releases are tagged `vX.Y.Z`.
 
 See [CLAUDE.md](CLAUDE.md) for architecture notes and Cinnamon-specific gotchas.
 
