@@ -1,0 +1,56 @@
+const Applet = imports.ui.applet;
+const PopupMenu = imports.ui.popupMenu;
+const { Clutter, Meta } = imports.gi;
+
+// Cinnamon resolves xlet require() paths relative to the applet root, not the calling file.
+const Darkness = require('./lib/darkness.js');
+const { DarkOverlay } = require('./lib/overlay.js');
+
+const ICON_NAME = 'xsi-display-brightness-symbolic';
+
+class DarkerApplet extends Applet.TextIconApplet {
+    constructor(metadata, orientation, panelHeight, instanceId) {
+        super(orientation, panelHeight, instanceId);
+
+        this.set_applet_icon_symbolic_name(ICON_NAME);
+        this._overlay = new DarkOverlay({ Clutter, Meta, global });
+
+        this.menuManager = new PopupMenu.PopupMenuManager(this);
+        this.menu = new Applet.AppletPopupMenu(this, orientation);
+        this.menuManager.addMenu(this.menu);
+
+        this._slider = new PopupMenu.PopupSliderMenuItem(0);
+        this._slider.connect('value-changed', (_slider, value) =>
+            this._setLevel(Darkness.sliderToLevel(value)),
+        );
+        this.menu.addMenuItem(this._slider);
+
+        const resetItem = new PopupMenu.PopupMenuItem('Reset to 0%');
+        resetItem.connect('activate', () => this._setLevel(0));
+        this.menu.addMenuItem(resetItem);
+
+        // Always start undarkened.
+        this._setLevel(0);
+    }
+
+    _setLevel(level) {
+        const clamped = Darkness.clampLevel(level);
+        this._overlay.setOpacity(Darkness.levelToOpacity(clamped));
+        this._slider.setValue(Darkness.levelToSlider(clamped));
+        this.set_applet_label(Darkness.panelLabel(clamped));
+        this.set_applet_tooltip(Darkness.tooltipText(clamped));
+    }
+
+    on_applet_clicked() {
+        this.menu.toggle();
+    }
+
+    on_applet_removed_from_panel() {
+        this._overlay.destroy();
+        this.menu.destroy();
+    }
+}
+
+function main(metadata, orientation, panelHeight, instanceId) {
+    return new DarkerApplet(metadata, orientation, panelHeight, instanceId);
+}
