@@ -36,8 +36,9 @@ class DarkOverlay {
 
         // Direct child of the stage, above uiGroup (windows, panels, menus) and top_window_group.
         this._stage.add_child(this._actor);
-        // Stay topmost if anything else is added to the stage later.
-        this._childAddedId = this._stage.connect('child-added', () => this._raise());
+        // Stay topmost if anything else is added to the stage later. Cinnamon's Clutter is
+        // older than upstream: the signal is ClutterContainer's 'actor-added', not 'child-added'.
+        this._actorAddedId = this._stage.connect('actor-added', () => this._raise());
     }
 
     /**
@@ -61,7 +62,7 @@ class DarkOverlay {
         if (!this._actor) return;
 
         this._setUnredirectDisabled(false);
-        this._stage.disconnect(this._childAddedId);
+        this._stage.disconnect(this._actorAddedId);
         this._actor.destroy();
         this._actor = null;
     }

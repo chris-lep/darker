@@ -51,6 +51,15 @@ test/                      # node:test unit tests (logic, overlay with fakes, pa
     - If a file doesn't assign `module.exports`, its top-level declarations are auto-exported.
       `applet.js` relies on that to export `main()`, so **never assign `module.exports` in
       `applet.js`** (tested).
+- **Cinnamon's Clutter/Meta are muffin's forks (`Clutter-0`, `Meta-0`), which are older than
+  upstream GNOME.** Upstream docs can be wrong here. For example, the stage emits
+  `actor-added`, not `child-added`, and using the wrong one crashed the applet once. Verify
+  any new GI API against the real typelibs before relying on it:
+    ```sh
+    GI_TYPELIB_PATH=/usr/lib/x86_64-linux-gnu/muffin LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/muffin \
+      cjs -c "imports.gi.versions.Clutter = '0'; const {GObject, Clutter} = imports.gi; \
+      print(GObject.signal_lookup('actor-added', Clutter.Stage.\$gtype) !== 0)"
+    ```
 - **Module cache is keyed by file size.** After an edit, `make reload` may keep the old code
   if the file size didn't change. Restart Cinnamon (`Ctrl+Alt+Esc`) to be sure.
 - `PopupSliderMenuItem.setValue()` does not emit `value-changed`. Only user interaction does.

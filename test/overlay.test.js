@@ -25,19 +25,26 @@ function createFakes() {
         }
     }
 
+    // Signals that exist on Cinnamon's (muffin) ClutterStage. Like GObject, connecting to any
+    // other name throws. Verify additions against the real typelib (see CLAUDE.md).
+    const STAGE_SIGNALS = ['actor-added'];
+
     const stage = {
         children: [],
         handlers: new Map(),
         nextId: 1,
         add_child(actor) {
             this.children.push(actor);
-            for (const [, h] of this.handlers) if (h.signal === 'child-added') h.cb(this, actor);
+            for (const [, h] of this.handlers) if (h.signal === 'actor-added') h.cb(this, actor);
         },
         set_child_above_sibling(actor, sibling) {
             assert.equal(sibling, null);
             this.children = this.children.filter((a) => a !== actor).concat(actor);
         },
         connect(signal, cb) {
+            if (!STAGE_SIGNALS.includes(signal)) {
+                throw new Error(`No signal '${signal}' on object 'MetaStage'`);
+            }
             const id = this.nextId++;
             this.handlers.set(id, { signal, cb });
             return id;
