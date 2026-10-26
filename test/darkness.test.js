@@ -28,15 +28,20 @@ describe('clampLevel', () => {
 });
 
 describe('slider mapping', () => {
-    it('maps the full slider span to 0..MAX_LEVEL', () => {
-        assert.equal(Darkness.sliderToLevel(0), 0);
-        assert.equal(Darkness.sliderToLevel(1), Darkness.MAX_LEVEL);
+    it('maps the full slider span to MAX_LEVEL..0 (right end = off)', () => {
+        assert.equal(Darkness.sliderToLevel(0), Darkness.MAX_LEVEL);
+        assert.equal(Darkness.sliderToLevel(1), 0);
         assert.equal(Darkness.sliderToLevel(0.5), Darkness.MAX_LEVEL / 2);
     });
 
+    it('levelToSlider puts off at the right end', () => {
+        assert.equal(Darkness.levelToSlider(0), 1);
+        assert.equal(Darkness.levelToSlider(Darkness.MAX_LEVEL), 0);
+    });
+
     it('clamps out-of-range slider values', () => {
-        assert.equal(Darkness.sliderToLevel(-1), 0);
-        assert.equal(Darkness.sliderToLevel(2), Darkness.MAX_LEVEL);
+        assert.equal(Darkness.sliderToLevel(-1), Darkness.MAX_LEVEL);
+        assert.equal(Darkness.sliderToLevel(2), 0);
         assert.equal(Darkness.sliderToLevel(NaN), 0);
     });
 
@@ -48,8 +53,8 @@ describe('slider mapping', () => {
     });
 
     it('levelToSlider stays within [0, 1]', () => {
-        assert.equal(Darkness.levelToSlider(5), 1);
-        assert.equal(Darkness.levelToSlider(-5), 0);
+        assert.equal(Darkness.levelToSlider(5), 0);
+        assert.equal(Darkness.levelToSlider(-5), 1);
     });
 });
 
@@ -75,19 +80,26 @@ describe('text helpers', () => {
         assert.equal(Darkness.toPercent(1), 90);
     });
 
+    it('brightnessPercent is 100 while off and 10 at the cap', () => {
+        assert.equal(Darkness.brightnessPercent(0), 100);
+        assert.equal(Darkness.brightnessPercent(0.4), 60);
+        assert.equal(Darkness.brightnessPercent(0.404), 60);
+        assert.equal(Darkness.brightnessPercent(1), 10);
+    });
+
     it('panelLabel is empty while off', () => {
         assert.equal(Darkness.panelLabel(0), '');
         assert.equal(Darkness.panelLabel(0.004), '');
     });
 
-    it('panelLabel shows the percentage while active', () => {
-        assert.equal(Darkness.panelLabel(0.4), '40%');
-        assert.equal(Darkness.panelLabel(0.9), '90%');
+    it('panelLabel shows the brightness while active', () => {
+        assert.equal(Darkness.panelLabel(0.4), '60%');
+        assert.equal(Darkness.panelLabel(0.9), '10%');
     });
 
     it('tooltipText always describes the state', () => {
         assert.equal(Darkness.tooltipText(0), 'Darker: off');
-        assert.equal(Darkness.tooltipText(0.4), 'Darker: 40%');
+        assert.equal(Darkness.tooltipText(0.4), 'Darker: 60% brightness');
     });
 });
 

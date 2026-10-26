@@ -3,6 +3,9 @@
  *
  * A "level" is the darkness in [0, MAX_LEVEL], where 0 means no darkening and 1 would be
  * a fully black screen. It is used directly as the overlay's alpha.
+ *
+ * Users never see the level itself: the UI shows brightness (100% = off, lower = darker), and
+ * the slider runs from darkest (left) to off (right), like Cinnamon's brightness slider.
  */
 
 /** Hard cap so the screen can never be blacked out completely. */
@@ -25,12 +28,13 @@ function clampLevel(level) {
 }
 
 /**
- * Maps a slider position in [0, 1] to a level. The whole slider spans 0..MAX_LEVEL.
+ * Maps a slider position in [0, 1] to a level. The whole slider spans MAX_LEVEL..0, so the
+ * right end (1) means no darkening.
  * @param {number} value
  * @returns {number}
  */
 function sliderToLevel(value) {
-    return clampLevel(value * MAX_LEVEL);
+    return clampLevel((1 - value) * MAX_LEVEL);
 }
 
 /**
@@ -39,7 +43,7 @@ function sliderToLevel(value) {
  * @returns {number}
  */
 function levelToSlider(level) {
-    return clampLevel(level) / MAX_LEVEL;
+    return 1 - clampLevel(level) / MAX_LEVEL;
 }
 
 /**
@@ -52,7 +56,7 @@ function levelToOpacity(level) {
 }
 
 /**
- * Level as a rounded integer percentage.
+ * Level (darkness) as a rounded integer percentage.
  * @param {number} level
  * @returns {number}
  */
@@ -61,13 +65,22 @@ function toPercent(level) {
 }
 
 /**
+ * Brightness shown to the user as a rounded integer percentage: 100 = off, 10 = darkest.
+ * @param {number} level
+ * @returns {number}
+ */
+function brightnessPercent(level) {
+    return 100 - toPercent(level);
+}
+
+/**
  * Text shown next to the panel icon: empty while off, so only the icon is visible.
  * @param {number} level
  * @returns {string}
  */
 function panelLabel(level) {
-    const percent = toPercent(level);
-    return percent === 0 ? '' : `${percent}%`;
+    const percent = brightnessPercent(level);
+    return percent === 100 ? '' : `${percent}%`;
 }
 
 /**
@@ -76,13 +89,13 @@ function panelLabel(level) {
  * @returns {string}
  */
 function tooltipText(level) {
-    const percent = toPercent(level);
-    return percent === 0 ? 'Darker: off' : `Darker: ${percent}%`;
+    const percent = brightnessPercent(level);
+    return percent === 100 ? 'Darker: off' : `Darker: ${percent}% brightness`;
 }
 
 /**
  * Moves a level by whole scroll steps, snapping to the SCROLL_STEP_PERCENT grid:
- * from 37%, one step darker gives 40% and one step brighter gives 35%.
+ * from 37% darkness, one step darker gives 40% and one step brighter gives 35%.
  * @param {number} level
  * @param {number} steps - positive = darker, negative = brighter
  * @returns {number}
@@ -118,6 +131,7 @@ module.exports = {
     levelToSlider,
     levelToOpacity,
     toPercent,
+    brightnessPercent,
     panelLabel,
     tooltipText,
 };

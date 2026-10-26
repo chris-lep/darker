@@ -6,8 +6,8 @@ Guidance for working on this repository.
 
 **Darker** (`darker@chris-lep`) is a Cinnamon panel applet that darkens the screen in
 software. A black, non-reactive Clutter actor is placed on top of `global.stage`, and a
-popup slider controls its opacity (0–90%). We deliberately don't use gamma or xrandr,
-because that conflicts with Cinnamon's Night Light.
+popup slider controls its opacity (0–90%, shown to users as 100–10% brightness). We
+deliberately don't use gamma or xrandr, because that conflicts with Cinnamon's Night Light.
 
 ## Commands
 
@@ -39,10 +39,12 @@ test/                      # node:test unit tests (logic, overlay with fakes, me
 - **`applet.js` stays thin** and is only verified manually inside Cinnamon.
 - Darkness is a "level" in `[0, MAX_LEVEL]` and is used directly as the overlay's alpha.
   `MAX_LEVEL = 0.9` is a safety cap so the screen can never go fully black.
-- Level is intentionally **not persisted**: the applet always starts at 0% (a requirement).
+- The UI never shows the level: it shows **brightness** (`brightnessPercent`, 100% = off,
+  10% = darkest), and the slider runs darkest (left) → off (right).
+- Level is intentionally **not persisted**: the applet always starts off (100%; a requirement).
 - Scrolling (over the panel icon _and_ over the popup slider) goes up = brighter, down = darker,
   in 5% steps snapped to the grid (`stepLevel`, `scrollSteps`). The slider is subclassed
-  (`DarknessSlider`) because the stock one scrolls the other way.
+  (`DarknessSlider`) because the stock one scrolls by 5% of its span, which is off that grid.
 - While the overlay is visible, `Meta.disable_unredirect_for_display` is active, so fullscreen
   windows still get composited and darkened. Those calls are reference counted and **must stay
   paired**. `DarkOverlay` tracks this with a boolean, and `destroy()` restores it.
@@ -78,7 +80,7 @@ test/                      # node:test unit tests (logic, overlay with fakes, me
 - Errors and `log()` output go to `~/.xsession-errors`.
 - Looking Glass: `Alt+F2`, type `lg`. The "Extensions" tab can reload the applet, and
   "Log" shows errors.
-- If the screen gets too dark, `Ctrl+Alt+Esc` restarts Cinnamon and resets the level to 0%.
+- If the screen gets too dark, `Ctrl+Alt+Esc` restarts Cinnamon and turns darkening off.
 
 ## Versioning and releases
 

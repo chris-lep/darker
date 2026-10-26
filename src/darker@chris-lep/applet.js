@@ -8,11 +8,12 @@ const { DarkOverlay } = require('./lib/overlay.js');
 
 const ICON_NAME = 'xsi-display-brightness-symbolic';
 
-// The stock slider scrolls "up = higher value = darker". Route its scroll events through the
-// applet so scrolling up means brighter everywhere.
+// The stock slider scrolls by 5% of its span, which is off the applet's 5% brightness grid
+// (the slider only spans 10..100%). Route its scroll events through the applet so scrolling
+// over the slider and over the panel icon behave the same.
 class DarknessSlider extends PopupMenu.PopupSliderMenuItem {
     constructor(onScroll) {
-        super(0);
+        super(1);
         this._onScroll = onScroll;
     }
 
@@ -38,7 +39,7 @@ class DarkerApplet extends Applet.TextIconApplet {
         );
         this.menu.addMenuItem(this._slider);
 
-        const resetItem = new PopupMenu.PopupMenuItem('Reset to 0%');
+        const resetItem = new PopupMenu.PopupMenuItem('Reset to 100%');
         resetItem.connect('activate', () => this._setLevel(0));
         this.menu.addMenuItem(resetItem);
 

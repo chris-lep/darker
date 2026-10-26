@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The scale now shows brightness instead of darkness: 100% is off and lower percentages are
+  darker (down to 10%). The panel label, tooltip and reset item ("Reset to 100%") follow suit.
+- The popup slider is reversed to match: right = brighter, like Cinnamon's brightness slider.
+
 ## [0.2.0] - 2026-10-25
 
 ### Added
