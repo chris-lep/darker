@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-26
+
 ### Changed
 
 - The scale now shows brightness instead of darkness: 100% is off and lower percentages are
@@ -31,6 +33,7 @@ All notable changes to this project are documented here. The format follows
 - "Reset to 0%" menu item.
 - Fullscreen windows are darkened too (unredirect is disabled while active).
 
-[Unreleased]: https://github.com/chris-lep/darker/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/chris-lep/darker/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/chris-lep/darker/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/chris-lep/darker/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/chris-lep/darker/releases/tag/v0.1.0
