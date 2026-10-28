@@ -2,7 +2,7 @@ const js = require('@eslint/js');
 const globals = require('globals');
 
 module.exports = [
-    { ignores: ['node_modules/'] },
+    { ignores: ['node_modules/', 'build/'] },
     js.configs.recommended,
     {
         // Applet code runs inside Cinnamon's GJS (cjs) runtime, loaded by Cinnamon's xlet
@@ -16,7 +16,6 @@ module.exports = [
                 global: 'readonly',
                 log: 'readonly',
                 logError: 'readonly',
-                _: 'readonly',
                 require: 'readonly',
                 module: 'writable',
                 exports: 'writable',

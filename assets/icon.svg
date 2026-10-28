@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Applet icon: a sun whose right half is dimmed. Render with `make icon`. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b3350"/>
+      <stop offset="1" stop-color="#171b2b"/>
+    </linearGradient>
+    <clipPath id="left">
+      <rect x="0" y="0" width="64" height="128"/>
+    </clipPath>
+    <clipPath id="right">
+      <rect x="64" y="0" width="64" height="128"/>
+    </clipPath>
+    <g id="sun">
+      <circle cx="64" cy="64" r="22"/>
+      <g stroke-width="9" stroke-linecap="round">
+        <line x1="64" y1="17" x2="64" y2="29"/>
+        <line x1="64" y1="99" x2="64" y2="111"/>
+        <line x1="17" y1="64" x2="29" y2="64"/>
+        <line x1="99" y1="64" x2="111" y2="64"/>
+        <line x1="30.8" y1="30.8" x2="39.3" y2="39.3"/>
+        <line x1="88.7" y1="88.7" x2="97.2" y2="97.2"/>
+        <line x1="30.8" y1="97.2" x2="39.3" y2="88.7"/>
+        <line x1="88.7" y1="39.3" x2="97.2" y2="30.8"/>
+      </g>
+    </g>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="url(#bg)"/>
+  <use href="#sun" clip-path="url(#left)" fill="#ffc94d" stroke="#ffc94d"/>
+  <use href="#sun" clip-path="url(#right)" fill="#6e5b31" stroke="#6e5b31"/>
+</svg>

@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- The applet's texts can be translated. The template is `po/darker@chris-lep.pot`.
+- Applet icon, shown in Cinnamon's applet settings.
+
 ## [0.3.0] - 2026-10-26
 
 ### Changed

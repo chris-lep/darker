@@ -101,6 +101,34 @@ describe('text helpers', () => {
         assert.equal(Darkness.tooltipText(0), 'Darker: off');
         assert.equal(Darkness.tooltipText(0.4), 'Darker: 60% brightness');
     });
+
+    it('resetLabel names full brightness', () => {
+        assert.equal(Darkness.resetLabel(), 'Reset to 100%');
+    });
+});
+
+describe('translation', () => {
+    const german = {
+        '%d%%': '%d %%',
+        'Darker: off': 'Darker: aus',
+        'Darker: %d%% brightness': 'Darker: %d %% Helligkeit',
+        'Reset to %d%%': 'Auf %d %% zurücksetzen',
+    };
+    const translate = (text) => german[text] ?? text;
+
+    it('formatPercent fills %d and unescapes %%', () => {
+        assert.equal(Darkness.formatPercent('%d%%', 60), '60%');
+        assert.equal(Darkness.formatPercent('%%%d %%', 5), '%5 %');
+        assert.equal(Darkness.formatPercent('no placeholder', 5), 'no placeholder');
+    });
+
+    it('labels use the injected gettext function', () => {
+        assert.equal(Darkness.panelLabel(0.4, translate), '60 %');
+        assert.equal(Darkness.panelLabel(0, translate), '');
+        assert.equal(Darkness.tooltipText(0, translate), 'Darker: aus');
+        assert.equal(Darkness.tooltipText(0.4, translate), 'Darker: 60 % Helligkeit');
+        assert.equal(Darkness.resetLabel(translate), 'Auf 100 % zurücksetzen');
+    });
 });
 
 describe('stepLevel', () => {

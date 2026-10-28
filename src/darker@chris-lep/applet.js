@@ -1,12 +1,21 @@
 const Applet = imports.ui.applet;
 const PopupMenu = imports.ui.popupMenu;
-const { Clutter, Meta } = imports.gi;
+const Gettext = imports.gettext;
+const { Clutter, GLib, Meta } = imports.gi;
 
 // Cinnamon resolves xlet require() paths relative to the applet root, not the calling file.
 const Darkness = require('./lib/darkness.js');
 const { DarkOverlay } = require('./lib/overlay.js');
 
+const UUID = 'darker@chris-lep';
 const ICON_NAME = 'xsi-display-brightness-symbolic';
+
+// Translations are installed per user by Cinnamon (from po/, when installed from Spices).
+Gettext.bindtextdomain(UUID, GLib.get_home_dir() + '/.local/share/locale');
+
+function _(text) {
+    return Gettext.dgettext(UUID, text);
+}
 
 // The stock slider scrolls by 5% of its span, which is off the applet's 5% brightness grid
 // (the slider only spans 10..100%). Route its scroll events through the applet so scrolling
@@ -39,7 +48,7 @@ class DarkerApplet extends Applet.TextIconApplet {
         );
         this.menu.addMenuItem(this._slider);
 
-        const resetItem = new PopupMenu.PopupMenuItem('Reset to 100%');
+        const resetItem = new PopupMenu.PopupMenuItem(Darkness.resetLabel(_));
         resetItem.connect('activate', () => this._setLevel(0));
         this.menu.addMenuItem(resetItem);
 
@@ -53,8 +62,8 @@ class DarkerApplet extends Applet.TextIconApplet {
         this._level = Darkness.clampLevel(level);
         this._overlay.setOpacity(Darkness.levelToOpacity(this._level));
         this._slider.setValue(Darkness.levelToSlider(this._level));
-        this.set_applet_label(Darkness.panelLabel(this._level));
-        this.set_applet_tooltip(Darkness.tooltipText(this._level));
+        this.set_applet_label(Darkness.panelLabel(this._level, _));
+        this.set_applet_tooltip(Darkness.tooltipText(this._level, _));
     }
 
     _onScroll(event) {

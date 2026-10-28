@@ -73,24 +73,57 @@ function brightnessPercent(level) {
     return 100 - toPercent(level);
 }
 
+/** Default translation function: returns the English text unchanged (used by the tests). */
+function untranslated(text) {
+    return text;
+}
+
+/**
+ * Fills a translated template's %d with a number and turns %% into %. Translators can move
+ * the number or add a space ("%d %%"), as in printf.
+ * @param {string} template
+ * @param {number} value
+ * @returns {string}
+ */
+function formatPercent(template, value) {
+    return template.replace(/%([d%])/g, (_match, conversion) =>
+        conversion === 'd' ? String(value) : '%',
+    );
+}
+
 /**
  * Text shown next to the panel icon: empty while off, so only the icon is visible.
  * @param {number} level
+ * @param {function(string): string} [_] - gettext function of the applet's text domain
  * @returns {string}
  */
-function panelLabel(level) {
+function panelLabel(level, _ = untranslated) {
     const percent = brightnessPercent(level);
-    return percent === 100 ? '' : `${percent}%`;
+    // Translators: panel label, %d is the screen brightness in percent ("60%")
+    return percent === 100 ? '' : formatPercent(_('%d%%'), percent);
 }
 
 /**
  * Tooltip of the panel icon.
  * @param {number} level
+ * @param {function(string): string} [_] - gettext function of the applet's text domain
  * @returns {string}
  */
-function tooltipText(level) {
+function tooltipText(level, _ = untranslated) {
     const percent = brightnessPercent(level);
-    return percent === 100 ? 'Darker: off' : `Darker: ${percent}% brightness`;
+    if (percent === 100) return _('Darker: off');
+    // Translators: tooltip, %d is the screen brightness in percent
+    return formatPercent(_('Darker: %d%% brightness'), percent);
+}
+
+/**
+ * Menu item that turns darkening off.
+ * @param {function(string): string} [_] - gettext function of the applet's text domain
+ * @returns {string}
+ */
+function resetLabel(_ = untranslated) {
+    // Translators: menu item that turns darkening off, %d is 100 (full brightness)
+    return formatPercent(_('Reset to %d%%'), brightnessPercent(0));
 }
 
 /**
@@ -132,6 +165,8 @@ module.exports = {
     levelToOpacity,
     toPercent,
     brightnessPercent,
+    formatPercent,
     panelLabel,
     tooltipText,
+    resetLabel,
 };

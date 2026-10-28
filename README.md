@@ -68,6 +68,8 @@ make check       # lint + format check + unit tests
 make test        # unit tests only (node --test, no dependencies needed)
 make format      # auto-format
 make reload      # reload the running applet after editing
+make pot         # update the translation template after changing UI texts
+make spice       # build the Cinnamon Spices package in build/spice/
 ```
 
 Changes are listed in [CHANGELOG.md](CHANGELOG.md). Versions follow
