@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 
 const { DarkOverlay } = require('../src/darker@chris-lep/lib/overlay.js');
 
-/** Minimal fakes for the parts of Clutter, Meta and Cinnamon's global that DarkOverlay uses. */
+/** Minimal fakes for the parts of Clutter and Cinnamon's global that DarkOverlay uses. */
 function createFakes() {
     class FakeActor {
         constructor(props) {
@@ -57,19 +57,6 @@ function createFakes() {
         },
     };
 
-    const display = { name: 'display' };
-    const Meta = {
-        unredirectDisabledCount: 0,
-        disable_unredirect_for_display(d) {
-            assert.equal(d, display);
-            this.unredirectDisabledCount++;
-        },
-        enable_unredirect_for_display(d) {
-            assert.equal(d, display);
-            this.unredirectDisabledCount--;
-        },
-    };
-
     const Clutter = {
         Actor: FakeActor,
         Color: class {
@@ -85,7 +72,7 @@ function createFakes() {
         BindCoordinate: { ALL: 'ALL' },
     };
 
-    return { Clutter, Meta, global: { stage, display }, stage };
+    return { Clutter, global: { stage }, stage };
 }
 
 describe('DarkOverlay', () => {
@@ -130,28 +117,16 @@ describe('DarkOverlay', () => {
         assert.equal(actor().opacity, 0);
     });
 
-    it('disables unredirect exactly once while active', () => {
-        assert.equal(fakes.Meta.unredirectDisabledCount, 0);
-        overlay.setOpacity(10);
-        overlay.setOpacity(50);
-        overlay.setOpacity(200);
-        assert.equal(fakes.Meta.unredirectDisabledCount, 1);
-        overlay.setOpacity(0);
-        overlay.setOpacity(0);
-        assert.equal(fakes.Meta.unredirectDisabledCount, 0);
-    });
-
     it('stays on top when other actors are added to the stage', () => {
         const other = { name: 'other' };
         fakes.stage.add_child(other);
         assert.equal(fakes.stage.top(), actor());
     });
 
-    it('destroy restores unredirect and disconnects from the stage', () => {
+    it('destroy removes the actor and disconnects from the stage', () => {
         const a = actor();
         overlay.setOpacity(100);
         overlay.destroy();
-        assert.equal(fakes.Meta.unredirectDisabledCount, 0);
         assert.equal(a.destroyed, true);
         assert.equal(fakes.stage.handlers.size, 0);
     });
@@ -160,6 +135,5 @@ describe('DarkOverlay', () => {
         overlay.destroy();
         assert.doesNotThrow(() => overlay.destroy());
         assert.doesNotThrow(() => overlay.setOpacity(100));
-        assert.equal(fakes.Meta.unredirectDisabledCount, 0);
     });
 });

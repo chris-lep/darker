@@ -52,6 +52,22 @@ describe('Spices metadata rules', () => {
     });
 });
 
+describe('Spices pattern checker (linuxmint/github-actions)', () => {
+    it("doesn't use Meta's unredirect override, which is forbidden for third-party code", () => {
+        for (const file of listFiles(appletDir).filter((f) => f.endsWith('.js'))) {
+            const source = fs.readFileSync(path.join(appletDir, file), 'utf8');
+            assert.doesNotMatch(source, /_unredirect_for_display\s*\(/, file);
+        }
+    });
+
+    it("doesn't hardcode .local/share (use GLib.get_user_data_dir())", () => {
+        for (const file of listFiles(appletDir).filter((f) => f.endsWith('.js'))) {
+            const source = fs.readFileSync(path.join(appletDir, file), 'utf8');
+            assert.doesNotMatch(source, /\.local\/share/, file);
+        }
+    });
+});
+
 describe('icon.png', () => {
     const png = fs.readFileSync(path.join(appletDir, 'icon.png'));
 

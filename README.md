@@ -56,6 +56,8 @@ the applet always brings it back to normal.
 
 - **The mouse cursor isn't darkened.** It's drawn separately by the hardware.
 - **Screenshots are darkened.** Screenshot tools capture the composited image, overlay included.
+- **Fullscreen apps aren't darkened if "Disable compositing for full-screen windows" is on** (System
+  Settings → General; off by default), because those windows then bypass the compositor.
 - It only works inside a Cinnamon session (it's part of the compositor, not a standalone program).
 
 ## Development

@@ -2,21 +2,21 @@
  * A black, click-through actor covering the whole stage (all monitors), drawn by Cinnamon's
  * compositor. Its opacity determines how much the screen is darkened.
  *
- * Cinnamon dependencies (Clutter, Meta, global) are injected so this class can be
- * unit-tested in Node with fakes.
+ * Fullscreen windows are covered too, because Cinnamon composites them by default. Users who
+ * enable "Disable compositing for full-screen windows" opt out of that, and we respect it: the
+ * Meta unredirect override is forbidden for third-party code on Spices.
+ *
+ * Cinnamon dependencies (Clutter, global) are injected so this class can be unit-tested in
+ * Node with fakes.
  */
 class DarkOverlay {
     /**
      * @param {object} deps
      * @param {object} deps.Clutter - imports.gi.Clutter
-     * @param {object} deps.Meta - imports.gi.Meta
      * @param {object} deps.global - Cinnamon's global object
      */
-    constructor({ Clutter, Meta, global }) {
-        this._Meta = Meta;
-        this._display = global.display;
+    constructor({ Clutter, global }) {
         this._stage = global.stage;
-        this._unredirectDisabled = false;
 
         this._actor = new Clutter.Actor({
             name: 'darker-overlay',
@@ -54,14 +54,12 @@ class DarkOverlay {
         } else {
             this._actor.hide();
         }
-        this._setUnredirectDisabled(opacity > 0);
     }
 
-    /** Removes the overlay and restores compositor state. Safe to call more than once. */
+    /** Removes the overlay. Safe to call more than once. */
     destroy() {
         if (!this._actor) return;
 
-        this._setUnredirectDisabled(false);
         this._stage.disconnect(this._actorAddedId);
         this._actor.destroy();
         this._actor = null;
@@ -69,19 +67,6 @@ class DarkOverlay {
 
     _raise() {
         this._stage.set_child_above_sibling(this._actor, null);
-    }
-
-    /**
-     * Fullscreen windows (videos, games) are normally "unredirected", i.e. they bypass the
-     * compositor, and the overlay would not be drawn over them. Disable that while darkening.
-     * The Meta calls are reference counted, so they must stay strictly paired.
-     */
-    _setUnredirectDisabled(disabled) {
-        if (disabled === this._unredirectDisabled) return;
-
-        if (disabled) this._Meta.disable_unredirect_for_display(this._display);
-        else this._Meta.enable_unredirect_for_display(this._display);
-        this._unredirectDisabled = disabled;
     }
 }
 

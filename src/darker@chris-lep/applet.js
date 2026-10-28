@@ -1,7 +1,7 @@
 const Applet = imports.ui.applet;
 const PopupMenu = imports.ui.popupMenu;
 const Gettext = imports.gettext;
-const { Clutter, GLib, Meta } = imports.gi;
+const { Clutter, GLib } = imports.gi;
 
 // Cinnamon resolves xlet require() paths relative to the applet root, not the calling file.
 const Darkness = require('./lib/darkness.js');
@@ -11,7 +11,7 @@ const UUID = 'darker@chris-lep';
 const ICON_NAME = 'xsi-display-brightness-symbolic';
 
 // Translations are installed per user by Cinnamon (from po/, when installed from Spices).
-Gettext.bindtextdomain(UUID, GLib.get_home_dir() + '/.local/share/locale');
+Gettext.bindtextdomain(UUID, GLib.get_user_data_dir() + '/locale');
 
 function _(text) {
     return Gettext.dgettext(UUID, text);
@@ -36,7 +36,7 @@ class DarkerApplet extends Applet.TextIconApplet {
         super(orientation, panelHeight, instanceId);
 
         this.set_applet_icon_symbolic_name(ICON_NAME);
-        this._overlay = new DarkOverlay({ Clutter, Meta, global });
+        this._overlay = new DarkOverlay({ Clutter, global });
 
         this.menuManager = new PopupMenu.PopupMenuManager(this);
         this.menu = new Applet.AppletPopupMenu(this, orientation);

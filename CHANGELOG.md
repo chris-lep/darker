@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Darker no longer overrides Cinnamon's "Disable compositing for full-screen windows" setting
+  (off by default). If you turned it on, fullscreen apps are no longer darkened. Cinnamon
+  Spices doesn't allow third-party applets to override it.
+
+### Fixed
+
+- Translations are looked up in `$XDG_DATA_HOME/locale` instead of a hardcoded
+  `~/.local/share/locale`.
+
 ## [1.0.0] - 2026-10-28
 
 ### Added
