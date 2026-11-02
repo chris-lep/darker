@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-03
+
 ### Fixed
 
 - Drag and drop (menu favorites, panel launchers, the window list, files dropped on the panel)
@@ -58,7 +60,8 @@ All notable changes to this project are documented here. The format follows
 - "Reset to 0%" menu item.
 - Fullscreen windows are darkened too (unredirect is disabled while active).
 
-[Unreleased]: https://github.com/chris-lep/darker/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/chris-lep/darker/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/chris-lep/darker/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/chris-lep/darker/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/chris-lep/darker/compare/v0.3.0...v1.0.0
 [0.3.0]: https://github.com/chris-lep/darker/compare/v0.2.0...v0.3.0
