@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Drag and drop (menu favorites, panel launchers, the window list, files dropped on the panel)
+  works again while the screen is darkened. The overlay blocked every drop.
+
 ## [1.0.1] - 2026-10-28
 
 ### Changed

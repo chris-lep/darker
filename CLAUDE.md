@@ -43,7 +43,7 @@ test/                      # node:test unit tests (logic, overlay, metadata, rel
 ```
 
 - **Put logic in `lib/darkness.js` and test it.** It has no imports, so Node can test it directly.
-- **`lib/overlay.js` gets `{ Clutter, global }` injected.** Don't add `imports.*` to it;
+- **`lib/overlay.js` gets `{ Clutter, GObject, global }` injected.** Don't add `imports.*` to it;
   the tests use fakes (`test/overlay.test.js`). Extend the fakes when you use new APIs.
 - **`applet.js` stays thin** and is only verified manually inside Cinnamon.
 - Darkness is a "level" in `[0, MAX_LEVEL]` and is used directly as the overlay's alpha.
@@ -78,6 +78,13 @@ test/                      # node:test unit tests (logic, overlay, metadata, rel
       cjs -c "imports.gi.versions.Clutter = '0'; const {GObject, Clutter} = imports.gi; \
       print(GObject.signal_lookup('actor-added', Clutter.Stage.\$gtype) !== 0)"
     ```
+- **`reactive: false` doesn't hide an actor from drag and drop.** It only excludes the actor
+  from event picking. Cinnamon's DnD (`js/ui/dnd.js`) finds drop targets with
+  `get_actor_at_pos(Clutter.PickMode.ALL, …)`, which returns non-reactive actors too, so a
+  fullscreen overlay swallowed every drop (fixed in 1.0.2). The overlay therefore uses its own
+  actor class with an empty `vfunc_pick` (no chain-up), so it paints but is never picked.
+  GType names must be unique per process and reloading re-evaluates the module, hence the
+  `Date.now()` suffix on its `GTypeName`.
 - **Module cache is keyed by file size.** After an edit, `make reload` may keep the old code
   if the file size didn't change. Restart Cinnamon (`Ctrl+Alt+Esc`) to be sure.
 - `PopupSliderMenuItem.setValue()` does not emit `value-changed`. Only user interaction does.

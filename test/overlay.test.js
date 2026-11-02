@@ -20,6 +20,9 @@ function createFakes() {
         hide() {
             this.visible = false;
         }
+        vfunc_pick() {
+            this.pickedBox = true;
+        }
         destroy() {
             this.destroyed = true;
         }
@@ -72,7 +75,16 @@ function createFakes() {
         BindCoordinate: { ALL: 'ALL' },
     };
 
-    return { Clutter, global: { stage }, stage };
+    const GObject = {
+        registered: [],
+        registerClass(meta, klass) {
+            assert.match(meta.GTypeName, /^DarkerOverlayActor_\d+$/);
+            this.registered.push(meta.GTypeName);
+            return klass;
+        },
+    };
+
+    return { Clutter, GObject, global: { stage }, stage };
 }
 
 describe('DarkOverlay', () => {
@@ -102,6 +114,17 @@ describe('DarkOverlay', () => {
         assert.equal(actor().constraints.length, 1);
         assert.equal(actor().constraints[0].source, fakes.stage);
         assert.equal(actor().constraints[0].coordinate, 'ALL');
+    });
+
+    it('is never picked, so drag and drop sees through it', () => {
+        assert.ok(actor() instanceof fakes.Clutter.Actor);
+        actor().vfunc_pick({});
+        assert.equal(actor().pickedBox, undefined, 'vfunc_pick must not chain up');
+    });
+
+    it('registers its actor class only once', () => {
+        new DarkOverlay(fakes).destroy();
+        assert.equal(fakes.GObject.registered.length, 1);
     });
 
     it('shows the actor with the given opacity', () => {
