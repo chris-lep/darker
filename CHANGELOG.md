@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-11-05
+
 ### Changed
 
 - On Cinnamon 6.8 and newer, Darker loads its modules with Cinnamon's native importer instead
@@ -65,7 +67,8 @@ All notable changes to this project are documented here. The format follows
 - "Reset to 0%" menu item.
 - Fullscreen windows are darkened too (unredirect is disabled while active).
 
-[Unreleased]: https://github.com/chris-lep/darker/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/chris-lep/darker/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/chris-lep/darker/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/chris-lep/darker/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/chris-lep/darker/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/chris-lep/darker/compare/v0.3.0...v1.0.0
