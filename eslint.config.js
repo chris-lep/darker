@@ -5,8 +5,8 @@ module.exports = [
     { ignores: ['node_modules/', 'build/'] },
     js.configs.recommended,
     {
-        // Applet code runs inside Cinnamon's GJS (cjs) runtime, loaded by Cinnamon's xlet
-        // loader, which provides require/module/exports in addition to the GJS globals.
+        // Applet code runs inside Cinnamon's GJS (cjs) runtime. Cinnamon 6.6's xlet loader
+        // provides require/module/exports; on 6.8+, `module` is undefined (see CLAUDE.md).
         files: ['src/**/*.js'],
         languageOptions: {
             ecmaVersion: 2022,

@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- On Cinnamon 6.8 and newer, Darker loads its modules with Cinnamon's native importer instead
+  of the deprecated `require()`. Cinnamon 6.6 keeps using `require()`.
+
 ## [1.0.2] - 2026-11-03
 
 ### Fixed

@@ -129,6 +129,22 @@ describe('translations', () => {
     });
 });
 
+// linuxmint/github-actions pattern-checker (patterns/deprecations.yml) warns about these on
+// Cinnamon 6.8, comments included. Only the Cinnamon 6.6 fallbacks may match: the one
+// require() call in applet.js and the guarded module.exports in each lib file.
+describe('pattern checker deprecations', () => {
+    const count = (file, regex) =>
+        (fs.readFileSync(path.join(appletDir, file), 'utf8').match(regex) || []).length;
+
+    for (const file of listFiles(appletDir).filter((f) => f.endsWith('.js'))) {
+        it(`${file} has only the expected require()/module.exports matches`, () => {
+            const inLib = file.startsWith(`lib${path.sep}`);
+            assert.equal(count(file, /\brequire\s*\(/g), file === 'applet.js' ? 1 : 0);
+            assert.equal(count(file, /\bmodule\.exports\b/g), inLib ? 1 : 0);
+        });
+    }
+});
+
 describe('buildSpice', () => {
     it('produces the Spices layout with the applet under files/<uuid>/', (t) => {
         const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'darker-spice-'));

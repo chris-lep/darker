@@ -62,13 +62,29 @@ test/                      # node:test unit tests (logic, overlay, metadata, rel
 
 ## Cinnamon gotchas
 
-- **Module system:** Cinnamon's xlet loader (`/usr/share/cinnamon/js/misc/fileUtils.js`)
-  provides a CommonJS-like `require`/`module.exports`. Two quirks:
-    - `require()` paths resolve **relative to the applet root**, not to the calling file. So
-      `lib/` modules must not `require` each other; pass values in instead.
-    - If a file doesn't assign `module.exports`, its top-level declarations are auto-exported.
-      `applet.js` relies on that to export `main()`, so **never assign `module.exports` in
-      `applet.js`** (tested).
+- **Module system:** two loaders, and the applet must work with both (6.6 is our minimum).
+    - **Cinnamon 6.8+** loads xlets with the native GJS importer: `applet.js` gets local modules
+      from `Extension.getCurrentExtension().imports.lib.<name>`, which exports only top-level
+      **`var` and `function`** declarations (`const`/`let`/`class` stay private). `require()`
+      and `module.exports` are deprecated there, and the global `module` is `undefined` outside
+      `require()`, so an unguarded `module.exports = …` throws.
+    - **Cinnamon 6.6** has no `getCurrentExtension`; its loader (`js/misc/fileUtils.js`) provides
+      a CommonJS-like `require`/`module.exports`. `require()` paths resolve **relative to the
+      applet root**, not to the calling file, so `lib/` modules must not import each other; pass
+      values in instead. If a file doesn't assign `module.exports` at the start of a line, its
+      top-level declarations are auto-exported. `applet.js` relies on that to export `main()`,
+      so **never assign `module.exports` in `applet.js`** (tested).
+    - Hence: `applet.js` loads `lib/` through `requireLib()` (native importer if available,
+      `require` otherwise; the only `require` call, tested). `lib/` files declare their exports
+      with `var`/`function` and assign `module.exports` only inside
+      `if (typeof module === 'object' && module)`, for Node and 6.6. `test/metadata.test.js`
+      checks both by evaluating each lib file in a `vm` context without `module`, which exports
+      the same declarations as the native importer. To check the 6.8 path by hand without 6.8,
+      import the lib files natively:
+        ```sh
+        cjs -c "imports.searchPath.unshift('src/darker@chris-lep'); \
+          print(Object.keys(imports.lib.darkness))"
+        ```
 - **Cinnamon's Clutter/Meta are muffin's forks (`Clutter-0`, `Meta-0`), which are older than
   upstream GNOME.** Upstream docs can be wrong here. For example, the stage emits
   `actor-added`, not `child-added`, and using the wrong one crashed the applet once. Verify
@@ -105,9 +121,11 @@ source of truth; the Spices copy is generated from it.
   `icon.png` (square), and the panel icon is set in `applet.js`. Metadata values must be ASCII.
   `test/spice.test.js` checks these rules locally.
 - Spices' CI also runs `linuxmint/github-actions/pattern-checker` on every PR (regexes in its
-  `patterns/*.yml`; forbidden APIs, deprecations, hardcoded paths). Expected and explained in
-  the PR: `require()`/`module.exports` are deprecated from Cinnamon 6.8, but their replacement
-  (`Extension.getCurrentExtension().imports`) doesn't exist in 6.6, our minimum.
+  `patterns/*.yml`; forbidden APIs, deprecations, hardcoded paths). It still flags our
+  6.6 fallbacks (the one `require()` call and the guarded `module.exports`): a reviewer
+  (claudiux) suggested exactly that pattern on PR #9189, so it's expected. The regexes also
+  match comments, so don't write `require()` or `module.exports` in comments
+  (`test/spice.test.js` pins the expected matches).
 - Spices reviewers check against the repo's `.github/copilot-instructions.md`: disconnect signals
   and timers on removal, no synchronous I/O, named return values (`Clutter.EVENT_STOP`), gettext
   boilerplate, JS supported by mozjs 115 (Mint 22.x).

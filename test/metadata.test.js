@@ -2,6 +2,7 @@ const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const vm = require('node:vm');
 
 const SRC_DIR = path.join(__dirname, '..', 'src');
 const appletDirs = fs.readdirSync(SRC_DIR);
@@ -45,4 +46,33 @@ describe('applet package', () => {
         const source = fs.readFileSync(path.join(appletDir, 'applet.js'), 'utf8');
         assert.doesNotMatch(source, /module\.exports/);
     });
+
+    it('applet.js loads lib/ natively, with require() only as the fallback for Cinnamon 6.6', () => {
+        const source = fs.readFileSync(path.join(appletDir, 'applet.js'), 'utf8');
+        assert.match(source, /Extension\.getCurrentExtension\(\)\.imports\.lib\[name\]/);
+        assert.equal((source.match(/\brequire\s*\(/g) || []).length, 1);
+    });
+
+    // Cinnamon 6.8+ imports lib files natively (Extension.getCurrentExtension().imports.lib.x):
+    // only top-level `var` and `function` declarations are exported (`const`, `let` and `class`
+    // stay private), and the global `module` is undefined. A vm script context without `module`
+    // behaves the same way, so evaluating the file there catches both an unguarded
+    // `module.exports` (it throws) and an export the native importer wouldn't see.
+    const libDir = path.join(appletDir, 'lib');
+    for (const file of fs.readdirSync(libDir)) {
+        it(`lib/${file} loads like Cinnamon 6.8's native importer and exports the same names`, () => {
+            const filename = path.join(libDir, file);
+            const context = vm.createContext({});
+            vm.runInContext(fs.readFileSync(filename, 'utf8'), context, { filename });
+
+            const exported = Object.keys(require(filename));
+            assert.ok(exported.length > 0);
+            for (const name of exported) {
+                assert.ok(
+                    Object.hasOwn(context, name),
+                    `${name} must be a top-level var or function`,
+                );
+            }
+        });
+    }
 });
