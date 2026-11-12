@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Support for vertical panels. Cinnamon no longer asks to remove Darker from a vertical panel,
+  and no longer logs `true, 1` warnings for it. Vertical panels show just the icon; the tooltip
+  still shows the brightness.
+
+### Changed
+
+- Classes are declared as `var X = class X`, following Cinnamon Spices conventions.
+
 ## [1.0.3] - 2026-11-05
 
 ### Changed

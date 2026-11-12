@@ -68,6 +68,16 @@ describe('Spices pattern checker (linuxmint/github-actions)', () => {
     });
 });
 
+describe('Spices reviewer conventions', () => {
+    it('declares classes as `var X = class X`, not with a class statement', () => {
+        for (const file of listFiles(appletDir).filter((f) => f.endsWith('.js'))) {
+            const source = fs.readFileSync(path.join(appletDir, file), 'utf8');
+            // An anonymous `class extends …` expression is fine.
+            assert.doesNotMatch(source, /^\s*class\s+(?!extends\b)[\w$]/m, file);
+        }
+    });
+});
+
 describe('icon.png', () => {
     const png = fs.readFileSync(path.join(appletDir, 'icon.png'));
 

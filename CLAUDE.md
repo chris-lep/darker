@@ -104,6 +104,12 @@ test/                      # node:test unit tests (logic, overlay, metadata, rel
 - **Module cache is keyed by file size.** After an edit, `make reload` may keep the old code
   if the file size didn't change. Restart Cinnamon (`Ctrl+Alt+Esc`) to be sure.
 - `PopupSliderMenuItem.setValue()` does not emit `value-changed`. Only user interaction does.
+- **Applets are horizontal-only by default.** A `TextIconApplet` that doesn't call
+  `setAllowedLayout(Applet.AllowedLayout.BOTH)` makes Cinnamon show a "does not support panels
+  of that type" dialog in vertical panels and log bare `[LookingGlass/warning] true, 1` / `true`
+  lines (leftover debug output in Cinnamon's `appletManager.js`). Darker allows both layouts and
+  hides its label in vertical panels (`set_show_label_in_vertical_panels(false)`);
+  `setOrientation()` re-applies the label when the panel's orientation changes.
 - Cinnamon refuses to load the applet if `metadata.json` `uuid` doesn't match the folder name.
 - `cinnamon-version` in metadata is a list of _minimum_ versions (`["6.6"]` means 6.6 or newer).
 - Reference implementations live in `/usr/share/cinnamon/applets/` (e.g. `sound@cinnamon.org`,
@@ -122,13 +128,14 @@ source of truth; the Spices copy is generated from it.
   `test/spice.test.js` checks these rules locally.
 - Spices' CI also runs `linuxmint/github-actions/pattern-checker` on every PR (regexes in its
   `patterns/*.yml`; forbidden APIs, deprecations, hardcoded paths). It still flags our
-  6.6 fallbacks (the one `require()` call and the guarded `module.exports`): a reviewer
-  (claudiux) suggested exactly that pattern on PR #9189, so it's expected. The regexes also
+  6.6 fallbacks (the one `require()` call and the guarded `module.exports`). That's expected:
+  Spices reviewers accept this pattern for applets that support 6.6. The regexes also
   match comments, so don't write `require()` or `module.exports` in comments
   (`test/spice.test.js` pins the expected matches).
 - Spices reviewers check against the repo's `.github/copilot-instructions.md`: disconnect signals
   and timers on removal, no synchronous I/O, named return values (`Clutter.EVENT_STOP`), gettext
-  boilerplate, JS supported by mozjs 115 (Mint 22.x).
+  boilerplate, JS supported by mozjs 115 (Mint 22.x). They also want classes declared as
+  `var X = class X extends …`, not `class X extends …`, like Cinnamon's own code (tested).
 - `spices/README.md` is what users see on the website. Keep it in sync with the main README's
   features, and never point users to install from anywhere but Spices.
 - To publish an update: release here, then `make spice SPICES_REPO=<clone>` and open a PR

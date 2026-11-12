@@ -12,6 +12,7 @@ click-through black layer over everything on screen, inside Cinnamon's composito
   go fully black)
 - Scroll over the panel icon to adjust in 5% steps
 - The panel shows just an icon while off, and the current brightness (e.g. `60%`) while active
+- Works in horizontal and vertical panels (vertical panels show just the icon)
 - Covers all monitors, panels, menus, and fullscreen video
 - Works together with **Night Light**
 - No external tools, no background processes
