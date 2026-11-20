@@ -75,6 +75,9 @@ make pot         # update the translation template after changing UI texts
 make spice       # build the Cinnamon Spices package in build/spice/
 ```
 
+CI runs `npm run check` on Node 22 and 24 for every push
+([.github/workflows/ci.yml](.github/workflows/ci.yml)).
+
 Changes are listed in [CHANGELOG.md](CHANGELOG.md). Versions follow
 [Semantic Versioning](https://semver.org/), and releases are tagged `vX.Y.Z`.
 
